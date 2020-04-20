@@ -1,0 +1,37 @@
+[package]
+name = "unicom-nres"
+version = "0.1.0"
+description = "Unified domain-name to IP address resolver"
+keywords = ["unicom", "dns", "resolver", "domain"]
+authors = ["K. <kayo@illumium.org>"]
+edition = "2018"
+readme = "README.md"
+
+[dependencies.futures]
+version = "^0.3"
+optional = true
+
+[dependencies.unicom]
+version = "0.1.0"
+default-features = false
+path = "../unicom"
+
+[dependencies.tokio-rs]
+package = "tokio"
+version = "^0.2"
+features = ["dns"]
+optional = true
+
+[dependencies.c-ares-resolver]
+version = "^7"
+optional = true
+
+[dependencies.async-std-resolver]
+version = "^0.19"
+optional = true
+
+[features]
+default = ["async-std"]
+tokio = ["tokio-rs", "unicom/tokio"]
+c-ares = ["c-ares-resolver", "futures", "unicom/futures-io"]
+async-std = ["async-std-resolver", "unicom/async-std"]
