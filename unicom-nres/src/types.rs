@@ -9,7 +9,7 @@ use crate::{IpAddrs};
 pub type Resolving = Pin<Box<dyn Future<Output = Result<IpAddrs>> + Send + 'static>>;
 
 /// Domain name resolver service
-pub trait Resolver {
+pub trait Resolver: Sync + Send + Clone + 'static {
     /// Resolvers should implement this method
     fn resolve_str(&self, name: &str) -> Resolving;
 

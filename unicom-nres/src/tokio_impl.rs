@@ -16,7 +16,7 @@ impl Resolver for TokioResolver {
         let name = name.to_string();
         Box::pin(async move {
             Ok(lookup_host(name).await
-               .map_err(|e| Error::ConnectionError(e.to_string()))?
+               .map_err(|e| Error::FailedResolve(e.to_string()))?
                .map(|addr| addr.ip())
                .collect())
         })

@@ -12,7 +12,7 @@ impl AsyncStdResolver {
         let resolver = resolver(
             config::ResolverConfig::default(),
             config::ResolverOpts::default(),
-        ).await.map_err(|e| Error::ConnectionError(e.to_string()))?;
+        ).await.map_err(|e| Error::FailedResolve(e.to_string()))?;
         Ok(Self { resolver })
     }
 }
@@ -24,7 +24,7 @@ impl Resolver for AsyncStdResolver {
         Box::pin(async move {
             resolver.lookup_ip(name).await
                 .map(|addrs| addrs.iter().collect())
-                .map_err(|e| Error::ConnectionError(e.to_string()))
+                .map_err(|e| Error::FailedResolve(e.to_string()))
         })
     }
 }

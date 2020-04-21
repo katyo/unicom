@@ -31,7 +31,7 @@ impl Resolver for CAresResolver {
                                        .collect()),
                 (Ok(v4), _) => Ok(v4.into_iter().map(|a| a.ipv4().into()).collect()),
                 (_, Ok(v6)) => Ok(v6.into_iter().map(|a| a.ipv6().into()).collect()),
-                (Err(v4), Err(_v6)) => Err(Error::ConnectionError(v4.to_string())),
+                (Err(v4), Err(_v6)) => Err(Error::FailedResolve(v4.to_string())),
             }
         })
     }
