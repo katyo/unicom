@@ -1,0 +1,27 @@
+[package]
+name = "unicom-serial"
+version = "0.1.0"
+description = "Serial port backend for unicom."
+keywords = ["unicom", "serial", "port", "iot"]
+authors = ["K. <kayo@illumium.org>"]
+license = "MIT"
+repository = "https://github.com/katyo/unicom"
+readme = "README.md"
+edition = "2018"
+
+[badges.travis-ci]
+repository = "katyo/unicom"
+
+[dependencies.unicom]
+version = "0.1.0"
+path = "../unicom"
+
+[dependencies.tokio-serial]
+version = "^4"
+default-features = false
+optional = true
+
+[features]
+default = ["tokio"]
+tokio = ["tokio-serial", "unicom/tokio"]
+libudev = ["tokio-serial/libudev"]
