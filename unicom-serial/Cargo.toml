@@ -22,6 +22,5 @@ default-features = false
 optional = true
 
 [features]
-default = ["tokio"]
 tokio = ["tokio-serial", "unicom/tokio"]
 libudev = ["tokio-serial/libudev"]
