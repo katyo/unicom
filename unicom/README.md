@@ -1,12 +1,10 @@
-/*!
-
 # Unified communication for IoT clients
 
 The backends interface was introduced to support different connection methods.
 
-The backend should provide the way to establish bidirectional connection for exchange binary data with device.
+Each backend should provide the way to establish bidirectional connection for exchange binary data with devices.
 
-**IMPORTANT NOTE**: Async crate feature should be selected, because no default is set.
+**IMPORTANT NOTE**: Async feature should be selected by consumer.
 
 ## Supported features
 
@@ -19,17 +17,3 @@ The backend should provide the way to establish bidirectional connection for exc
 * _unicom-tcp_ TCP socket connection
 * _unicom-unix_ Unix-domain socket connection
 * _unicom-serial_ Serial port connection
-
- */
-
-mod types;
-mod manager;
-mod result;
-mod to_url;
-
-pub(crate) use log;
-
-pub use types::*;
-pub use manager::*;
-pub use result::*;
-pub use to_url::*;

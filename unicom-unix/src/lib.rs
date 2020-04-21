@@ -1,6 +1,6 @@
 /*!
 
-# Raw Unix-domain socket backend
+# Raw Unix-domain socket backend for unicom
 
 This backend can be used to connect to device emulators which mapped to Unix-domain socket.
 

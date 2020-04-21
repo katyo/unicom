@@ -1,6 +1,6 @@
 /*!
 
-# Raw TCP socket backend
+# Raw TCP socket backend for unicom
 
 This backend can be used to connect to devices which mapped to TCP ports, such as RS232-TO-TCP connectors.
 
