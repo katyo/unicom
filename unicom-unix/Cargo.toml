@@ -1,0 +1,33 @@
+[package]
+name = "unicom-unix"
+version = "0.1.0"
+description = "Unix domain socket backend for unicom."
+keywords = ["unicom", "unix", "socket", "iot"]
+authors = ["K. <kayo@illumium.org>"]
+license = "MIT"
+repository = "https://github.com/katyo/unicom"
+readme = "README.md"
+edition = "2018"
+
+[badges.travis-ci]
+repository = "katyo/unicom"
+
+[dependencies.unicom]
+version = "0.1.0"
+path = "../unicom"
+
+[dependencies.tokio-rs]
+package = "tokio"
+version = "^0.2"
+features = ["uds"]
+optional = true
+
+[dependencies.async-std-rs]
+package = "async-std"
+version = "^1"
+optional = true
+
+[features]
+default = ["async-std"]
+tokio = ["tokio-rs", "unicom/tokio"]
+async-std = ["async-std-rs", "unicom/async-std"]
