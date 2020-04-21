@@ -1,10 +1,15 @@
 [package]
 name = "unicom"
 version = "0.1.0"
+description = "Unified communication for IoT clients"
 authors = ["K. <kayo@illumium.org>"]
+license = "MIT"
+repository = "https://github.com/katyo/unicom"
+readme = "README.md"
 edition = "2018"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[badges.travis-ci]
+repository = "katyo/unicom"
 
 [dependencies.url]
 version = "^2"
@@ -26,5 +31,4 @@ version = "^1"
 optional = true
 
 [features]
-default = ["futures"]
 futures = ["futures-io"]

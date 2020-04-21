@@ -20,8 +20,11 @@ pub enum Error {
     /// The URL cannot be handled by registered backends
     UnsupportedUrl(Url),
 
-    /// Connection error occurred
-    ConnectionError(String),
+    /// Name resolving error
+    FailedResolve(String),
+
+    /// Unable to connect
+    FailedConnect(String),
 }
 
 impl StdError for Error {}
@@ -33,7 +36,8 @@ impl Display for Error {
             AlreadyRegistered(name) => { "Backend already registered: ".fmt(f)?; name.fmt(f) },
             InvalidUrl(error) => { "Unable to parse URL: ".fmt(f)?; error.fmt(f) },
             UnsupportedUrl(url) => { "Unable to handle specified URL: ".fmt(f)?; url.fmt(f) },
-            ConnectionError(error) => { "Connection error: ".fmt(f)?; error.fmt(f) },
+            FailedResolve(error) => { "Unable to resolve name: ".fmt(f)?; error.fmt(f) },
+            FailedConnect(error) => { "Unable to connect: ".fmt(f)?; error.fmt(f) },
         }
     }
 }
@@ -52,6 +56,6 @@ impl From<UrlError> for Error {
 
 impl From<String> for Error {
     fn from(error: String) -> Self {
-        Self::ConnectionError(error)
+        Self::FailedConnect(error)
     }
 }

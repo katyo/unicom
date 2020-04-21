@@ -1,6 +1,6 @@
 use crate::Result;
 
-pub use url::Url;
+pub use url::{Url, Host};
 
 /// Something which can represented as url
 pub trait ToUrl {

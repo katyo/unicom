@@ -5,7 +5,7 @@ use std::{
 };
 use std::future::Future;
 
-#[cfg(feature = "futures-io")]
+#[cfg(feature = "futures")]
 use futures_io::{AsyncRead, AsyncWrite};
 
 #[cfg(feature = "tokio")]
