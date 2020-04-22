@@ -79,7 +79,9 @@ where
                 _ => return None,
             };
             let port = url.port().unwrap_or(23);
-            Some(Arc::new(TcpConnector { host, port, resolver: self.resolver.clone() }))
+            let url = url.clone();
+            let resolver = self.resolver.clone();
+            Some(Arc::new(TcpConnector { url, host, port, resolver }))
         } else {
             None
         }
@@ -89,6 +91,7 @@ where
 #[derive(Clone)]
 struct TcpConnector<R> {
     resolver: R,
+    url: Url,
     host: Host,
     port: u16,
 }
@@ -97,6 +100,10 @@ impl<R> Connector for TcpConnector<R>
 where
     R: Resolver,
 {
+    fn url(&self) -> &Url {
+        &self.url
+    }
+
     fn connect(&self) -> BoxedConnect {
         let this = self.clone();
         Box::pin(async move {

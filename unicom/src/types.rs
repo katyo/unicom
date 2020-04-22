@@ -36,6 +36,9 @@ impl<T> Connection for T where T: AsyncRead + AsyncWrite + Send + Sync + Unpin {
 ///
 /// Each backend should implements the `connect` method.
 pub trait Connector: Send + Sync {
+    /// Get device URL
+    fn url(&self) -> &Url;
+
     /// Establish connection to device
     fn connect(&self) -> BoxedConnect;
 }

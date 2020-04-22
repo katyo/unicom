@@ -62,7 +62,8 @@ impl Backend for UnixSocket {
             && url.path() != "/"
         {
             let path = url.path().into();
-            Some(Arc::new(UnixConnector { path }))
+            let url = url.clone();
+            Some(Arc::new(UnixConnector { url, path }))
         } else {
             None
         }
@@ -71,10 +72,15 @@ impl Backend for UnixSocket {
 
 #[derive(Clone)]
 struct UnixConnector {
+    url: Url,
     path: PathBuf,
 }
 
 impl Connector for UnixConnector {
+    fn url(&self) -> &Url {
+        &self.url
+    }
+
     fn connect(&self) -> BoxedConnect {
         let this = self.clone();
         Box::pin(async move {

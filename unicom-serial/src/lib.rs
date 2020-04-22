@@ -108,7 +108,8 @@ impl Backend for SerialPort {
                     settings.baud_rate = baud_rate;
                 }
             }
-            Some(Arc::new(SerialConnector { path, settings }))
+            let url = url.clone();
+            Some(Arc::new(SerialConnector { url, path, settings }))
         } else {
             None
         }
@@ -117,11 +118,16 @@ impl Backend for SerialPort {
 
 #[derive(Clone)]
 struct SerialConnector {
+    url: Url,
     path: PathBuf,
     settings: SerialPortSettings,
 }
 
 impl Connector for SerialConnector {
+    fn url(&self) -> &Url {
+        &self.url
+    }
+
     fn connect(&self) -> BoxedConnect {
         let this = self.clone();
         Box::pin(async move {
