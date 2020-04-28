@@ -35,3 +35,12 @@ pub use async_std_impl::*;
 
 #[cfg(feature = "tokio")]
 pub use tokio_impl::*;
+
+#[cfg(all(not(feature = "tokio"), not(feature = "async-std"), feature = "c-ares"))]
+pub type DefaultResolver = CAresResolver;
+
+#[cfg(all(feature = "tokio", not(feature = "async-std"), not(feature = "c-ares")))]
+pub type DefaultResolver = TokioResolver;
+
+#[cfg(all(not(feature = "tokio"), feature = "async-std", not(feature = "c-ares")))]
+pub type DefaultResolver = AsyncStdResolver;
