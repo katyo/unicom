@@ -8,6 +8,9 @@ repository = "https://github.com/katyo/unicom"
 readme = "README.md"
 edition = "2018"
 
+[package.metadata.docs.rs]
+features = ["rustdoc"]
+
 [badges.travis-ci]
 repository = "katyo/unicom"
 
@@ -32,3 +35,4 @@ optional = true
 
 [features]
 futures = ["futures-io"]
+rustdoc = ["futures"]

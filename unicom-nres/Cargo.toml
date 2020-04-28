@@ -9,6 +9,9 @@ repository = "https://github.com/katyo/unicom"
 readme = "README.md"
 edition = "2018"
 
+[package.metadata.docs.rs]
+features = ["rustdoc"]
+
 [badges.travis-ci]
 repository = "katyo/unicom"
 
@@ -36,5 +39,6 @@ optional = true
 
 [features]
 tokio = ["tokio-rs", "unicom/tokio"]
-c-ares = ["c-ares-resolver", "futures", "unicom/futures-io"]
 async-std = ["async-std-resolver", "unicom/async-std"]
+c-ares = ["c-ares-resolver", "futures", "unicom/futures"]
+rustdoc = ["c-ares"]

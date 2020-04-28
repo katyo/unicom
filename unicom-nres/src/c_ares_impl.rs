@@ -13,7 +13,7 @@ impl CAresResolver {
     pub fn new() -> Result<Self> {
         FutureResolver::new()
             .map(|resolver| Self { resolver: Arc::new(resolver) })
-            .map_err(|e| Error::ConnectionError(e.to_string()))
+            .map_err(|e| Error::FailedResolve(e.to_string()))
     }
 }
 

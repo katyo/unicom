@@ -22,14 +22,23 @@ The backend should provide the way to establish bidirectional connection for exc
 
  */
 
-mod types;
-mod manager;
-mod result;
-mod to_url;
+#[cfg(not(any(feature = "futures", feature = "tokio", feature = "async-std")))]
+compile_error!("Either of features should be selected: futures, tokio, async-std");
 
-pub(crate) use log;
+#[cfg(any(feature = "futures", feature = "tokio", feature = "async-std"))]
+mod real {
+    mod types;
+    mod manager;
+    mod result;
+    mod to_url;
 
-pub use types::*;
-pub use manager::*;
-pub use result::*;
-pub use to_url::*;
+    pub(crate) use log;
+
+    pub use types::*;
+    pub use manager::*;
+    pub use result::*;
+    pub use to_url::*;
+}
+
+#[cfg(any(feature = "futures", feature = "tokio", feature = "async-std"))]
+pub use real::*;
