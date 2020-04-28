@@ -24,7 +24,7 @@ before_install:
         export msys2+='& C:\\tools\\msys64\\msys2_shell.cmd -defterm -no-start'
         export mingw64="$msys2 -mingw64 -full-path -here -c "\"\$@"\" --"
         export msys2+=" -msys2 -c "\"\$@"\" --"
-        $msys2 pacman --sync --noconfirm --needed mingw-w64-x86_64-toolchain
+        $msys2 pacman --sync --noconfirm --needed mingw-w64-x86_64-toolchain mingw-w64-x86_64-libtool
         ## Install more MSYS2 packages from https://packages.msys2.org/base here
         taskkill //IM gpg-agent.exe //F  # https://travis-ci.community/t/4967
         export PATH=/C/tools/msys64/mingw64/bin:$PATH
@@ -46,11 +46,12 @@ before_cache:
 script:
 - (cd unicom-nres && cargo test --features tokio && cargo test --features async-std && cargo test --features c-ares)
 - (cd unicom-tcp && cargo test --features tokio && cargo test --features async-std)
-- (cd unicom-unix && cargo test --features tokio && cargo test --features async-std)
+- if [ "$TRAVIS_OS_NAME" != "windows" ]; then (cd unicom-unix && cargo test --features tokio && cargo test --features async-std); fi
 - (cd unicom-serial && cargo test --features tokio)
 jobs:
   allow_failures:
   - rust: nightly
+  - os: windows
   include:
   - stage: publish
     script:

@@ -41,4 +41,4 @@ optional = true
 tokio = ["tokio-rs", "unicom/tokio"]
 async-std = ["async-std-resolver", "unicom/async-std"]
 c-ares = ["c-ares-resolver", "futures", "unicom/futures"]
-rustdoc = ["c-ares"]
+rustdoc = ["async-std"]
