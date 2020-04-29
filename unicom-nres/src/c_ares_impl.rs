@@ -1,20 +1,13 @@
-use std::sync::Arc;
+use std::sync::{Arc, Mutex};
 use futures::join;
 use c_ares_resolver::{FutureResolver};
 use unicom::{Result, Error};
 use crate::{Resolver, Resolving};
 
-#[derive(Clone)]
+#[derive(Clone, Default)]
+#[repr(transparent)]
 pub struct CAresResolver {
-    resolver: Arc<FutureResolver>,
-}
-
-impl CAresResolver {
-    pub fn new() -> Result<Self> {
-        FutureResolver::new()
-            .map(|resolver| Self { resolver: Arc::new(resolver) })
-            .map_err(|e| Error::FailedResolve(e.to_string()))
-    }
+    resolver: Arc<Mutex<Option<Result<Arc<FutureResolver>>>>>,
 }
 
 impl Resolver for CAresResolver {
@@ -22,6 +15,16 @@ impl Resolver for CAresResolver {
         let name = name.to_string();
         let resolver = self.resolver.clone();
         Box::pin(async move {
+            if resolver.lock().unwrap().is_none() {
+                *resolver.lock().unwrap() = Some(
+                    FutureResolver::new()
+                        .map(|resolver| Arc::new(resolver))
+                        .map_err(|e| Error::FailedResolve(e.to_string()))
+                );
+            }
+
+            let resolver = resolver.lock().unwrap().clone().unwrap()?;
+
             match join!(resolver.query_a(&name),
                         resolver.query_aaaa(&name)) {
                 (Ok(v4), Ok(v6)) => Ok(v4.into_iter()

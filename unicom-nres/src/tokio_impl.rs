@@ -5,12 +5,6 @@ use crate::{Resolver, Resolving};
 #[derive(Clone, Default)]
 pub struct TokioResolver;
 
-impl TokioResolver {
-    pub fn new() -> Self {
-        Self::default()
-    }
-}
-
 impl Resolver for TokioResolver {
     fn resolve_str(&self, name: &str) -> Resolving {
         let name = name.to_string();
