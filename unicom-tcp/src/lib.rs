@@ -122,3 +122,65 @@ where
         })
     }
 }
+
+#[cfg(test)]
+mod test {
+    #[cfg(feature = "tokio")]
+    use {
+        tokio_rs as tokio,
+        tokio_rs::{net::TcpListener, task::spawn, io::copy, prelude::*},
+    };
+
+    #[cfg(feature = "async-std")]
+    use {
+        async_std_rs as async_std,
+        async_std_rs::{net::TcpListener, task::spawn, io::copy, prelude::*},
+    };
+
+    use unicom::Manager;
+    use unicom_nres::DefaultResolver;
+    use super::TcpSocket;
+
+    #[cfg_attr(feature = "tokio", tokio::test)]
+    #[cfg_attr(feature = "async-std", async_std::test)]
+    async fn connect() {
+        let manager = Manager::default();
+        manager.register(TcpSocket::new(DefaultResolver::default())).unwrap();
+
+        echo_server("127.0.0.1:43210").await.unwrap();
+
+        let connector = manager.create("tcp://127.0.0.1:43210/").unwrap();
+        let mut connection = connector.connect().await.unwrap();
+        let input = b"abc\n\0";
+        connection.write_all(input).await.unwrap();
+        let mut data = [0; 32];
+        let n = connection.read(&mut data).await.unwrap();
+        assert_eq!(n, input.len());
+        assert_eq!(&data[..n], input);
+    }
+
+    async fn echo_server(addr: &str) -> std::io::Result<()> {
+        let mut listener = TcpListener::bind(addr).await?;
+        //println!("listenning: {:?}", listener);
+
+        spawn(async move {
+            loop {
+                let (mut socket, _) = listener.accept().await?;
+                //println!("accepted: {:?}", socket);
+
+                #[cfg(feature = "tokio")]
+                let (mut rd, mut wr) = socket.split();
+
+                #[cfg(feature = "async-std")]
+                let (mut rd, mut wr) = &mut (&socket, &socket);
+
+                if copy(&mut rd, &mut wr).await? == 0 {
+                    break;
+                }
+            }
+            Ok(()) as std::io::Result<_>
+        });
+
+        Ok(())
+    }
+}
