@@ -37,6 +37,16 @@ optional = true
 version = "^0.19"
 optional = true
 
+[dev-dependencies.tokio-rs]
+package = "tokio"
+version = "^0.2"
+features = ["macros"]
+
+[dev-dependencies.async-std-rs]
+package = "async-std"
+version = "^1"
+features = ["attributes"]
+
 [features]
 tokio = ["tokio-rs", "unicom/tokio"]
 async-std = ["async-std-resolver", "unicom/async-std"]

@@ -29,3 +29,26 @@ impl Resolver for AsyncStdResolver {
         })
     }
 }
+
+#[cfg(test)]
+pub(crate) mod test {
+    use async_std_rs as async_std;
+    use super::{Resolver, AsyncStdResolver};
+
+    #[async_std::test]
+    async fn test_success() {
+        let r = AsyncStdResolver::default();
+        let r = r.resolve_name("illumium.org").await;
+
+        eprintln!("!!! {:?}", r);
+        assert!(r.is_ok());
+    }
+
+    #[async_std::test]
+    async fn test_failed() {
+        let r = AsyncStdResolver::default();
+        let r = r.resolve_name("nihil.illumium.org").await;
+
+        assert!(r.is_err());
+    }
+}
