@@ -18,7 +18,7 @@ impl Resolver for TokioResolver {
 }
 
 #[cfg(test)]
-pub(crate) mod test {
+mod test {
     use tokio_rs as tokio;
     use super::{Resolver, TokioResolver};
 

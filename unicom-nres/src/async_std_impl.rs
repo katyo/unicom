@@ -31,7 +31,7 @@ impl Resolver for AsyncStdResolver {
 }
 
 #[cfg(test)]
-pub(crate) mod test {
+mod test {
     use async_std_rs as async_std;
     use super::{Resolver, AsyncStdResolver};
 

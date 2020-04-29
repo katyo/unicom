@@ -1,0 +1,8 @@
+[workspace]
+members = [
+  "unicom",
+  "unicom-nres",
+  "unicom-tcp",
+  "unicom-unix",
+  "unicom-serial",
+]
