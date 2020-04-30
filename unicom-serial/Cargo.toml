@@ -1,6 +1,6 @@
 [package]
 name = "unicom-serial"
-version = "0.1.0"
+version = "0.1.1"
 description = "Serial port backend for unicom."
 keywords = ["unicom", "serial", "port", "iot"]
 authors = ["K. <kayo@illumium.org>"]
@@ -16,7 +16,7 @@ features = ["rustdoc"]
 repository = "katyo/unicom"
 
 [dependencies.unicom]
-version = "0.1.0"
+version = "^0.1"
 path = "../unicom"
 
 [dependencies.tokio-serial]

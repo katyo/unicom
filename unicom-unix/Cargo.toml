@@ -1,6 +1,6 @@
 [package]
 name = "unicom-unix"
-version = "0.1.0"
+version = "0.1.1"
 description = "Unix domain socket backend for unicom."
 keywords = ["unicom", "unix", "socket", "iot"]
 authors = ["K. <kayo@illumium.org>"]
@@ -16,7 +16,7 @@ features = ["rustdoc"]
 repository = "katyo/unicom"
 
 [dependencies.unicom]
-version = "0.1.0"
+version = "^0.1"
 path = "../unicom"
 
 [dependencies.tokio-rs]
