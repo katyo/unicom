@@ -37,7 +37,7 @@ pub trait Connection: AsyncRead + AsyncWrite + Send + Unpin {}
 impl<T> Connection for T where T: AsyncRead + AsyncWrite + Send + Unpin {}
 
 /// Backend connector interface
-pub trait Connector: Send {
+pub trait Connector: Send + Sync {
     /// Get device URL
     fn url(&self) -> &Url;
 

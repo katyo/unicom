@@ -1,6 +1,6 @@
 [package]
 name = "unicom"
-version = "0.1.0"
+version = "0.1.1"
 description = "Unified communication for IoT clients"
 keywords = ["iot", "devices", "communication"]
 authors = ["K. <kayo@illumium.org>"]
