@@ -1,5 +1,5 @@
 use std::sync::{Arc, Mutex};
-use futures::join;
+use futures_util::join;
 use c_ares_resolver::{FutureResolver};
 use unicom::{Result, Error};
 use crate::{Resolver, Resolving};

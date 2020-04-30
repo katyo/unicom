@@ -15,7 +15,7 @@ features = ["rustdoc"]
 [badges.travis-ci]
 repository = "katyo/unicom"
 
-[dependencies.futures]
+[dependencies.futures-util]
 version = "^0.3"
 optional = true
 
@@ -50,5 +50,5 @@ features = ["attributes"]
 [features]
 tokio = ["tokio-rs", "unicom/tokio"]
 async-std = ["async-std-resolver", "unicom/async-std"]
-c-ares = ["c-ares-resolver", "futures", "unicom/futures"]
+c-ares = ["c-ares-resolver", "futures-util", "unicom/futures"]
 rustdoc = ["async-std"]

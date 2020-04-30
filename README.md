@@ -5,17 +5,15 @@
 [![Docs.rs API Docs](https://docs.rs/unicom/badge.svg)](https://docs.rs/unicom)
 [![Travis-CI Status](https://travis-ci.com/katyo/unicom.svg?branch=master)](https://travis-ci.com/katyo/unicom)
 
-The backends interface was introduced to support different connection methods.
+The backends interface was introduced to support different connection methods. Each backend should provide the way to establish bidirectional connection for exchanging binary data with devices.
 
-Each backend should provide the way to establish bidirectional connection for exchange binary data with devices.
-
-**IMPORTANT NOTE**: Async feature should be selected by consumer.
+**IMPORTANT NOTE**: Async runtime feature should be selected explicitly.
 
 ## Supported features
 
 * __futures__ Use [futures](https://docs.rs/futures/) only
-* __tokio__ Use [tokio](https://docs.rs/tokio/)
-* __async-std__ Use [async-std](https://docs.rs/async-std/)
+* __tokio__ Use [tokio](https://docs.rs/tokio/) runtime
+* __async-std__ Use [async-std](https://docs.rs/async-std/) runtime
 
 ## Built-in backends
 

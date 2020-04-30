@@ -4,7 +4,7 @@
 
 This backend can be used for interfacing with devices connected via serial ports.
 
-**IMPORTANT NOTE**: Async framework feature should be selected, because there is no default.
+**IMPORTANT NOTE**: Async runtime feature should be selected explicitly.
 
 ## Supported features
 
