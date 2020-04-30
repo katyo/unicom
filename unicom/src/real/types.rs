@@ -20,22 +20,24 @@ use crate::{Result, Url};
 pub type BoxedConnection = Box<dyn Connection>;
 
 /// The establishing connection between backend and device
-pub type BoxedConnect = Pin<Box<dyn Future<Output = Result<BoxedConnection>> + Send>>;
+pub type BoxedConnect = Pin<Box<dyn Connect>>;
 
-/// Boxed backend
+/// Unified connector object
 pub type BoxedConnector = Arc<dyn Connector>;
 
-/// Boxed backend type
+/// Unified backend object
 pub type BoxedBackend = Box<dyn Backend>;
 
-/// The established connection between backend and device
-pub trait Connection: AsyncRead + AsyncWrite + Send + Sync + Unpin {}
-impl<T> Connection for T where T: AsyncRead + AsyncWrite + Send + Sync + Unpin {}
+/// The establishing connect between backend and device
+pub trait Connect: Future<Output = Result<BoxedConnection>> + Send {}
+impl<T> Connect for T where T: Future<Output = Result<BoxedConnection>> + Send {}
 
-/// The definition of backend instance
-///
-/// Each backend should implements the `connect` method.
-pub trait Connector: Send + Sync {
+/// The established connection between backend and device
+pub trait Connection: AsyncRead + AsyncWrite + Send + Unpin {}
+impl<T> Connection for T where T: AsyncRead + AsyncWrite + Send + Unpin {}
+
+/// Backend connector interface
+pub trait Connector: Send {
     /// Get device URL
     fn url(&self) -> &Url;
 
@@ -43,9 +45,11 @@ pub trait Connector: Send + Sync {
     fn connect(&self) -> BoxedConnect;
 }
 
-/// The definition of backend
+/// Backend interface
 pub trait Backend {
     /// The name of backend
+    ///
+    /// Examples: tcp, serial.
     fn name(&self) -> &str;
 
     /// The backend description
@@ -53,7 +57,7 @@ pub trait Backend {
 
     /// Create connector
     ///
-    /// This method should check URL and get connection options from it.
+    /// This method should check URL and extract connection options from it.
     ///
     /// Method returns connector instance when URL is compatible with backend.
     fn connector(&self, url: &Url) -> Option<BoxedConnector>;
