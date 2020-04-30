@@ -55,5 +55,12 @@ jobs:
   include:
   - stage: publish
     script:
-    - (cd extern_executor && cargo publish || true)
+    - |-
+        (cd unicom && cargo publish --features tokio || true)
+        sleep 5
+        (cd unicom-nres && cargo publish --features tokio || true)
+        sleep 5
+        (cd unicom-tcp && cargo publish --features tokio || true)
+        (cd unicom-unix && cargo publish --features tokio || true)
+        (cd unicom-serial && cargo publish --features tokio || true)
     if: (type = push) && (tag =~ /^\d+\.\d+\.\d+/)
