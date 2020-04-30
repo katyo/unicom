@@ -2,7 +2,7 @@
 
 # Unified domain name to IP address resolver
 
-**IMPORTANT NOTE**: Async feature should be selected, because no default is set.
+**IMPORTANT NOTE**: Async runtime feature should be selected explicitly.
 
 ## Supported features
 
