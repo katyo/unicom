@@ -21,8 +21,8 @@ path = "../unicom"
 
 [dependencies.tokio-rs]
 package = "tokio"
-version = "^0.2"
-features = ["uds"]
+version = "^1"
+features = ["net"]
 optional = true
 
 [dependencies.async-std-rs]

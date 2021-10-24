@@ -25,8 +25,8 @@ path = "../unicom"
 
 [dependencies.tokio-rs]
 package = "tokio"
-version = "^0.2"
-features = ["dns"]
+version = "^1"
+features = ["net"]
 optional = true
 
 [dependencies.c-ares-resolver]
@@ -34,12 +34,12 @@ version = "^7"
 optional = true
 
 [dependencies.async-std-resolver]
-version = "^0.19"
+version = "^0.20"
 optional = true
 
 [dev-dependencies.tokio-rs]
 package = "tokio"
-version = "^0.2"
+version = "^1"
 features = ["macros"]
 
 [dev-dependencies.async-std-rs]

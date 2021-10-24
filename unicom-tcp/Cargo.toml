@@ -25,8 +25,8 @@ path = "../unicom-nres"
 
 [dependencies.tokio-rs]
 package = "tokio"
-version = "^0.2"
-features = ["tcp"]
+version = "^1"
+features = ["net"]
 optional = true
 
 [dependencies.async-std-rs]
@@ -36,8 +36,8 @@ optional = true
 
 [dev-dependencies.tokio-rs]
 package = "tokio"
-version = "^0.2"
-features = ["rt-core", "io-util", "macros"]
+version = "^1"
+features = ["rt", "io-util", "macros"]
 
 [dev-dependencies.async-std-rs]
 package = "async-std"

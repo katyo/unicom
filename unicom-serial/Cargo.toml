@@ -20,11 +20,12 @@ version = "^0.1"
 path = "../unicom"
 
 [dependencies.tokio-serial]
-version = "^4"
+version = "^5"
 default-features = false
 optional = true
 
 [features]
 tokio = ["tokio-serial", "unicom/tokio"]
+async-std = ["unicom/async-std"]
 libudev = ["tokio-serial/libudev"]
 rustdoc = ["tokio"]
