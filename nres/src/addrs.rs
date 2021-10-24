@@ -1,6 +1,6 @@
 use std::{
+    iter::{Chain, Filter, FromIterator},
     slice::Iter,
-    iter::{Filter, Chain, FromIterator},
 };
 
 pub use std::net::IpAddr;
@@ -89,10 +89,18 @@ impl IpAddrs {
             AnyType => Any(self.0.iter()),
             OnlyV4 => Only(self.0.iter().filter(is_v4 as AddrFn)),
             OnlyV6 => Only(self.0.iter().filter(is_v6 as AddrFn)),
-            PreferV4 => Prefer(self.0.iter().filter(is_v4 as AddrFn)
-                               .chain(self.0.iter().filter(is_v6 as AddrFn))),
-            PreferV6 => Prefer(self.0.iter().filter(is_v6 as AddrFn)
-                               .chain(self.0.iter().filter(is_v4 as AddrFn))),
+            PreferV4 => Prefer(
+                self.0
+                    .iter()
+                    .filter(is_v4 as AddrFn)
+                    .chain(self.0.iter().filter(is_v6 as AddrFn)),
+            ),
+            PreferV6 => Prefer(
+                self.0
+                    .iter()
+                    .filter(is_v6 as AddrFn)
+                    .chain(self.0.iter().filter(is_v4 as AddrFn)),
+            ),
         })
     }
 }

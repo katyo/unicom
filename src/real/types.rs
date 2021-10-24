@@ -1,9 +1,5 @@
-use std::{
-    pin::Pin,
-    ops::Deref,
-    sync::Arc,
-};
 use std::future::Future;
+use std::{ops::Deref, pin::Pin, sync::Arc};
 
 #[cfg(feature = "futures")]
 use futures_io::{AsyncRead, AsyncWrite};

@@ -1,8 +1,8 @@
-use std::sync::{Arc, Mutex};
-use futures_util::join;
-use c_ares_resolver::{FutureResolver};
-use unicom::{Result, Error};
 use crate::{Resolver, Resolving};
+use c_ares_resolver::FutureResolver;
+use futures_util::join;
+use std::sync::{Arc, Mutex};
+use unicom::{Error, Result};
 
 #[derive(Clone, Default)]
 #[repr(transparent)]
@@ -19,19 +19,18 @@ impl Resolver for CAresResolver {
                 *resolver.lock().unwrap() = Some(
                     FutureResolver::new()
                         .map(|resolver| Arc::new(resolver))
-                        .map_err(|e| Error::FailedResolve(e.to_string()))
+                        .map_err(|e| Error::FailedResolve(e.to_string())),
                 );
             }
 
             let resolver = resolver.lock().unwrap().clone().unwrap()?;
 
-            match join!(resolver.query_a(&name),
-                        resolver.query_aaaa(&name)) {
-                (Ok(v4), Ok(v6)) => Ok(v4.into_iter()
-                                       .map(|a| a.ipv4().into())
-                                       .chain(v6.into_iter()
-                                              .map(|a| a.ipv6().into()))
-                                       .collect()),
+            match join!(resolver.query_a(&name), resolver.query_aaaa(&name)) {
+                (Ok(v4), Ok(v6)) => Ok(v4
+                    .into_iter()
+                    .map(|a| a.ipv4().into())
+                    .chain(v6.into_iter().map(|a| a.ipv6().into()))
+                    .collect()),
                 (Ok(v4), _) => Ok(v4.into_iter().map(|a| a.ipv4().into()).collect()),
                 (_, Ok(v6)) => Ok(v6.into_iter().map(|a| a.ipv6().into()).collect()),
                 (Err(v4), Err(_v6)) => Err(Error::FailedResolve(v4.to_string())),
@@ -42,8 +41,8 @@ impl Resolver for CAresResolver {
 
 #[cfg(test)]
 mod test {
+    use super::{CAresResolver, Resolver};
     use async_std_rs as async_std;
-    use super::{Resolver, CAresResolver};
 
     #[async_std::test]
     async fn test_success() {

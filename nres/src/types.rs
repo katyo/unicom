@@ -1,9 +1,6 @@
-use std::{
-    pin::Pin,
-    future::Future,
-};
-use unicom::{Result};
-use crate::{IpAddrs};
+use crate::IpAddrs;
+use std::{future::Future, pin::Pin};
+use unicom::Result;
 
 /// Domain name resolving operation
 pub type Resolving = Pin<Box<dyn Future<Output = Result<IpAddrs>> + Send + 'static>>;

@@ -1,9 +1,9 @@
 use std::{
     error::Error as StdError,
-    result::Result as StdResult,
     fmt::{Display, Formatter, Result as FmtResult},
+    result::Result as StdResult,
 };
-use url::{Url, ParseError as UrlError};
+use url::{ParseError as UrlError, Url};
 
 /// Result type
 pub type Result<T> = StdResult<T, Error>;
@@ -33,11 +33,26 @@ impl Display for Error {
     fn fmt(&self, f: &mut Formatter) -> FmtResult {
         pub use Error::*;
         match self {
-            AlreadyRegistered(name) => { "Backend already registered: ".fmt(f)?; name.fmt(f) },
-            InvalidUrl(error) => { "Unable to parse URL: ".fmt(f)?; error.fmt(f) },
-            UnsupportedUrl(url) => { "Unable to handle specified URL: ".fmt(f)?; url.fmt(f) },
-            FailedResolve(error) => { "Unable to resolve name: ".fmt(f)?; error.fmt(f) },
-            FailedConnect(error) => { "Unable to connect: ".fmt(f)?; error.fmt(f) },
+            AlreadyRegistered(name) => {
+                "Backend already registered: ".fmt(f)?;
+                name.fmt(f)
+            }
+            InvalidUrl(error) => {
+                "Unable to parse URL: ".fmt(f)?;
+                error.fmt(f)
+            }
+            UnsupportedUrl(url) => {
+                "Unable to handle specified URL: ".fmt(f)?;
+                url.fmt(f)
+            }
+            FailedResolve(error) => {
+                "Unable to resolve name: ".fmt(f)?;
+                error.fmt(f)
+            }
+            FailedConnect(error) => {
+                "Unable to connect: ".fmt(f)?;
+                error.fmt(f)
+            }
         }
     }
 }

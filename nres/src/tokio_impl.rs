@@ -1,6 +1,6 @@
+use crate::{Resolver, Resolving};
 use tokio_rs::net::lookup_host;
 use unicom::Error;
-use crate::{Resolver, Resolving};
 
 #[derive(Clone, Default)]
 pub struct TokioResolver;
@@ -9,18 +9,19 @@ impl Resolver for TokioResolver {
     fn resolve_str(&self, name: &str) -> Resolving {
         let name = name.to_string() + ":0"; // add port number because tokio resolves socket addr only
         Box::pin(async move {
-            Ok(lookup_host(name).await
-               .map_err(|e| Error::FailedResolve(e.to_string()))?
-               .map(|addr| addr.ip())
-               .collect())
+            Ok(lookup_host(name)
+                .await
+                .map_err(|e| Error::FailedResolve(e.to_string()))?
+                .map(|addr| addr.ip())
+                .collect())
         })
     }
 }
 
 #[cfg(test)]
 mod test {
-    use tokio_rs as tokio;
     use super::{Resolver, TokioResolver};
+    use tokio_rs as tokio;
 
     #[tokio::test]
     async fn test_success() {

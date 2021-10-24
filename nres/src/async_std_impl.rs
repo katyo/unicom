@@ -1,7 +1,7 @@
-use std::sync::{Arc, Mutex};
-use async_std_resolver::{AsyncStdResolver as AStdResolver, resolver as new_resolver, config};
-use unicom::{Result, Error};
 use crate::{Resolver, Resolving};
+use async_std_resolver::{config, resolver as new_resolver, AsyncStdResolver as AStdResolver};
+use std::sync::{Arc, Mutex};
+use unicom::{Error, Result};
 
 #[derive(Clone, Default)]
 #[repr(transparent)]
@@ -15,15 +15,21 @@ impl Resolver for AsyncStdResolver {
         let resolver = self.resolver.clone();
         Box::pin(async move {
             if resolver.lock().unwrap().is_none() {
-                *resolver.lock().unwrap() = Some(new_resolver(
-                    config::ResolverConfig::default(),
-                    config::ResolverOpts::default(),
-                ).await.map_err(|e| Error::FailedResolve(e.to_string())));
+                *resolver.lock().unwrap() = Some(
+                    new_resolver(
+                        config::ResolverConfig::default(),
+                        config::ResolverOpts::default(),
+                    )
+                    .await
+                    .map_err(|e| Error::FailedResolve(e.to_string())),
+                );
             }
 
             let resolver = resolver.lock().unwrap().clone().unwrap()?;
 
-            resolver.lookup_ip(name).await
+            resolver
+                .lookup_ip(name)
+                .await
                 .map(|addrs| addrs.iter().collect())
                 .map_err(|e| Error::FailedResolve(e.to_string()))
         })
@@ -32,8 +38,8 @@ impl Resolver for AsyncStdResolver {
 
 #[cfg(test)]
 mod test {
+    use super::{AsyncStdResolver, Resolver};
     use async_std_rs as async_std;
-    use super::{Resolver, AsyncStdResolver};
 
     #[async_std::test]
     async fn test_success() {

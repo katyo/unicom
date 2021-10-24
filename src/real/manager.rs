@@ -1,6 +1,9 @@
+use super::{Backend, BoxedBackend, BoxedConnector};
+use crate::{
+    log::{error, info},
+    Error, Result, ToUrl,
+};
 use std::sync::{Arc, RwLock};
-use super::{Backend, BoxedConnector, BoxedBackend};
-use crate::{Result, Error, ToUrl, log::{error, info}};
 
 /// The list of backends
 type Backends = Arc<RwLock<Vec<BoxedBackend>>>;
@@ -16,7 +19,9 @@ pub struct Manager {
 impl Default for Manager {
     /// Create new backends manager
     fn default() -> Self {
-        Self { backends: Arc::new(RwLock::new(Vec::default())) }
+        Self {
+            backends: Arc::new(RwLock::new(Vec::default())),
+        }
     }
 }
 
@@ -39,10 +44,14 @@ impl Manager {
     pub fn create(&self, url: impl ToUrl) -> Result<BoxedConnector> {
         let url = url.to_url()?;
         self.with(|backends| {
-            backends.iter().filter_map(|backend| backend.connector(&url)).next().ok_or_else(|| {
-                error!("No backends which can handle URL {}", url);
-                url.into()
-            })
+            backends
+                .iter()
+                .filter_map(|backend| backend.connector(&url))
+                .next()
+                .ok_or_else(|| {
+                    error!("No backends which can handle URL {}", url);
+                    url.into()
+                })
         })
     }
 
