@@ -113,6 +113,7 @@ impl Connector for SerialConnector {
         Box::pin(async move {
             let mut stm = SerialStream::open(&this.builder)
                 .map_err(|err| Error::FailedConnect(err.to_string()))?;
+            #[cfg(unix)]
             stm.set_exclusive(true)
                 .map_err(|err| Error::FailedConnect(err.to_string()))?;
             Ok(Box::new(stm) as BoxedConnection)
