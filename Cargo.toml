@@ -8,7 +8,7 @@ members = [
 
 [package]
 name = "unicom"
-version = "0.1.1"
+version = "0.2.0"
 description = "Unified communication for IoT clients"
 keywords = ["iot", "devices", "communication"]
 authors = ["K. <kayo@illumium.org>"]

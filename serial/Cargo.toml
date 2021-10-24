@@ -1,6 +1,6 @@
 [package]
 name = "unicom-serial"
-version = "0.1.1"
+version = "0.2.0"
 description = "Serial port backend for unicom."
 keywords = ["unicom", "serial", "port", "iot"]
 authors = ["K. <kayo@illumium.org>"]
@@ -13,7 +13,7 @@ edition = "2018"
 features = ["rustdoc"]
 
 [dependencies.unicom]
-version = "0.1"
+version = "0.2.0"
 path = ".."
 
 [dependencies.tokio-serial]

@@ -1,6 +1,6 @@
 [package]
 name = "unicom-nres"
-version = "0.1.1"
+version = "0.2.0"
 description = "Unified domain-name to IP address resolver"
 keywords = ["unicom", "dns", "resolver", "domain"]
 authors = ["K. <kayo@illumium.org>"]
@@ -17,7 +17,7 @@ version = "0.3"
 optional = true
 
 [dependencies.unicom]
-version = "0.1"
+version = "0.2.0"
 path = ".."
 
 [dependencies.tokio-rs]

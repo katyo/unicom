@@ -1,6 +1,6 @@
 [package]
 name = "unicom-tcp"
-version = "0.1.1"
+version = "0.2.0"
 description = "TCP socket backend for unicom."
 keywords = ["unicom", "tcp", "socket", "iot"]
 authors = ["K. <kayo@illumium.org>"]
@@ -13,11 +13,11 @@ edition = "2018"
 features = ["rustdoc"]
 
 [dependencies.unicom]
-version = "0.1"
+version = "0.2.0"
 path = ".."
 
 [dependencies.unicom-nres]
-version = "^0.1"
+version = "0.2.0"
 path = "../nres"
 
 [dependencies.tokio-rs]
