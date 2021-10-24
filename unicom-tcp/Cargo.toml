@@ -12,9 +12,6 @@ edition = "2018"
 [package.metadata.docs.rs]
 features = ["rustdoc"]
 
-[badges.travis-ci]
-repository = "katyo/unicom"
-
 [dependencies.unicom]
 version = "^0.1"
 path = "../unicom"
