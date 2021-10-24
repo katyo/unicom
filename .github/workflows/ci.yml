@@ -1,0 +1,385 @@
+name: Rust
+on:
+  push:
+    branches:
+      - master
+    tags:
+      - '[0-9]+.[0-9]+.[0-9]+'
+  pull_request:
+jobs:
+  format:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: Setup Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          profile: minimal
+          components: rustfmt
+          default: true
+          override: true
+      - name: Cargo cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+          key: ${{ runner.os }}-cargo-rust_stable-${{ hashFiles('**/Cargo.lock') }}
+      - name: Format
+        uses: actions-rs/cargo@v1
+        with:
+          command: fmt
+          args: --all -- --check
+
+  doc:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: Setup Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          profile: minimal
+          components: rust-docs
+          default: true
+          override: true
+      - name: Cargo cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+          key: ${{ runner.os }}-cargo-rust_nightly-${{ hashFiles('**/Cargo.lock') }}
+      - name: Build cache
+        uses: actions/cache@v2
+        with:
+          path: target
+          key: ${{ runner.os }}-build-rust_nightly-doc-${{ hashFiles('**/Cargo.lock') }}
+      - name: Docs core
+        uses: actions-rs/cargo@v1
+        env:
+          DOCS_RS: 1
+        with:
+          command: doc
+          args: --features rustdoc
+      - name: Docs nres
+        uses: actions-rs/cargo@v1
+        env:
+          DOCS_RS: 1
+        with:
+          command: doc
+          args: --manifest-path nres/Cargo.toml --features rustdoc
+      - name: Docs tcp
+        uses: actions-rs/cargo@v1
+        env:
+          DOCS_RS: 1
+        with:
+          command: doc
+          args: --manifest-path tcp/Cargo.toml --features rustdoc
+      - name: Docs unix
+        uses: actions-rs/cargo@v1
+        env:
+          DOCS_RS: 1
+        with:
+          command: doc
+          args: --manifest-path unix/Cargo.toml --features rustdoc
+      - name: Docs serial
+        uses: actions-rs/cargo@v1
+        env:
+          DOCS_RS: 1
+        with:
+          command: doc
+          args: --manifest-path serial/Cargo.toml --features rustdoc
+      - name: Upload docs
+        uses: actions/upload-artifact@v2
+        with:
+          name: docs
+          path: |
+            target/doc/unicom
+            target/doc/unicom-nres
+            target/doc/unicom-tcp
+            target/doc/unicom-unix
+            target/doc/unicom-serial
+
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+        with:
+          submodules: true
+      - uses: actions-rs/toolchain@v1
+        with:
+          toolchain: nightly
+          profile: minimal
+          components: clippy
+          default: true
+          override: true
+      - name: Cargo cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+          key: ${{ runner.os }}-cargo-rust_nightly-${{ hashFiles('**/Cargo.lock') }}
+      - name: Build cache
+        uses: actions/cache@v2
+        with:
+          path: target
+          key: ${{ runner.os }}-build-rust_nightly-check-${{ hashFiles('**/Cargo.lock') }}
+      - name: Check core
+        uses: actions-rs/clippy-check@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          args: --features futures
+      - name: Check tokio tcp
+        uses: actions-rs/clippy-check@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          args: --manifest-path tcp/Cargo.toml --features tokio
+      - name: Check async-std tcp
+        uses: actions-rs/clippy-check@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          args: --manifest-path tcp/Cargo.toml --features async-std
+      - name: Check tokio unix
+        uses: actions-rs/clippy-check@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          args: --manifest-path unix/Cargo.toml --features tokio
+      - name: Check async-std unix
+        uses: actions-rs/clippy-check@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          args: --manifest-path unix/Cargo.toml --features async-std
+      - name: Check tokio serial
+        uses: actions-rs/clippy-check@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          args: --manifest-path serial/Cargo.toml --features tokio
+
+  test:
+    needs:
+      - format
+      - doc
+      - check
+    strategy:
+      fail-fast: ${{ startsWith(github.ref, 'refs/tags/') }}
+      matrix:
+        include:
+          # Test features
+          ## Linux i686
+          - task: features
+            os: ubuntu-latest
+            rust: stable
+            target: i686-unknown-linux-gnu
+            features: tokio
+          - task: features
+            os: ubuntu-latest
+            rust: stable
+            target: i686-unknown-linux-gnu
+            features: async-std
+          ## Linux x86_64
+          - task: features
+            os: ubuntu-latest
+            rust: stable
+            target: x86_64-unknown-linux-gnu
+            features: tokio
+          - task: features
+            os: ubuntu-latest
+            rust: stable
+            target: x86_64-unknown-linux-gnu
+            features: async-std
+          ## MacOS x86_64
+          - task: features
+            os: macos-latest
+            rust: stable
+            target: x86_64-apple-darwin
+            features: tokio
+          - task: features
+            os: macos-latest
+            rust: stable
+            target: x86_64-apple-darwin
+            features: async-std
+          ## Windows GNU i686
+          - task: features
+            os: windows-latest
+            rust: stable
+            target: i686-pc-windows-gnu
+            features: tokio
+          - task: features
+            os: windows-latest
+            rust: stable
+            target: i686-pc-windows-gnu
+            features: async-std
+          ## Windows GNU x86_64
+          - task: features
+            os: windows-latest
+            rust: stable
+            target: x86_64-pc-windows-gnu
+            features: tokio
+          - task: features
+            os: windows-latest
+            rust: stable
+            target: x86_64-pc-windows-gnu
+            features: async-std
+          ## Windows MSVC i686
+          - task: features
+            os: windows-latest
+            rust: stable
+            target: i686-pc-windows-msvc
+            features: tokio
+          - task: features
+            os: windows-latest
+            rust: stable
+            target: i686-pc-windows-msvc
+            features: async-std
+          ## Windows MSVC x86_64
+          - task: features
+            os: windows-latest
+            rust: stable
+            target: x86_64-pc-windows-msvc
+            features: tokio
+          - task: features
+            os: windows-latest
+            rust: stable
+            target: x86_64-pc-windows-msvc
+            features: async-std
+          # Test channels
+          ## Stable channel
+          - task: channels
+            os: ubuntu-latest
+            rust: stable
+            target: x86_64-unknown-linux-gnu
+            features: tokio
+          - task: channels
+            os: ubuntu-latest
+            rust: stable
+            target: x86_64-unknown-linux-gnu
+            features: async-std
+          ## Beta channel
+          - task: channels
+            os: ubuntu-latest
+            rust: beta
+            target: x86_64-unknown-linux-gnu
+            features: tokio
+          - task: channels
+            os: ubuntu-latest
+            rust: beta
+            target: x86_64-unknown-linux-gnu
+            features: async-std
+          ## Nightly channel
+          - task: channels
+            os: ubuntu-latest
+            rust: nightly
+            target: x86_64-unknown-linux-gnu
+            features: tokio
+          - task: channels
+            os: ubuntu-latest
+            rust: nightly
+            target: x86_64-unknown-linux-gnu
+            features: async-std
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: Setup cross linux toolchain
+        if: contains(matrix.target, '-linux-') && !startsWith(matrix.target, 'x86_64-')
+        run: |
+          case "${{ matrix.target }}" in
+            i686-*) SYSTEM_ARCH=i386 ;;
+          esac
+          GCC_TARGET=$(printf "${{ matrix.target }}" | sed 's/-unknown-/-/' | sed 's/arm[^-]*/arm/g')
+          ENV_TARGET=$(printf "${{ matrix.target }}" | tr '[:lower:]' '[:upper:]' | tr '-' '_')
+          sudo dpkg --add-architecture ${SYSTEM_ARCH}
+          sudo apt-get update -y
+          sudo apt-get install -y libc6-dev:${SYSTEM_ARCH} gcc-${GCC_TARGET}
+          echo "CARGO_TARGET_${ENV_TARGET}_LINKER=${GCC_TARGET}-gcc" >> $GITHUB_ENV
+      - name: Setup clang on windows
+        if: startsWith(matrix.os, 'windows')
+        uses: KyleMayes/install-llvm-action@v1
+        with:
+          version: 11.0
+          directory: ${{ runner.temp }}/llvm
+      - name: Prepare env for windows
+        if: startsWith(matrix.os, 'windows') && endsWith(matrix.target, '-gnu')
+        run: |
+          # Add symlinks to the GNU C headers for Clang
+          New-Item -Path "${{ runner.temp }}\llvm\x86_64-w64-mingw32" -ItemType SymbolicLink -Value "C:\msys64\mingw64\x86_64-w64-mingw32"
+          New-Item -Path "${{ runner.temp }}\llvm\i686-w64-mingw32" -ItemType SymbolicLink -Value "C:\msys64\mingw32\i686-w64-mingw32"
+          # Add mingw executable paths to PATH
+          echo "C:\msys64\mingw64\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          echo "C:\msys64\mingw32\bin" | Out-File -FilePath $env:GITHUB_PATH -Encoding utf8 -Append
+          echo "CC_x86_64_pc_windows_gnu=x86_64-w64-mingw32-gcc" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+          echo "CC_i686_pc_windows_gnu=i686-w64-mingw32-gcc" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
+      - name: Setup Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: ${{ matrix.rust }}
+          target: ${{ matrix.target }}
+          profile: minimal
+          components: rustfmt
+          default: true
+          override: true
+      - name: Cargo cache
+        uses: actions/cache@v2
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+          key: ${{ runner.os }}-cargo-rust_${{ matrix.rust }}-${{ hashFiles('**/Cargo.lock') }}
+      - name: Build cache
+        if: ${{ runner.os != 'macOS' }}
+        uses: actions/cache@v2
+        with:
+          path: target
+          key: ${{ runner.os }}-build-rust_${{ matrix.rust }}-target_${{ matrix.target }}-${{ hashFiles('**/Cargo.lock') }}
+      - name: Update deps
+        uses: actions-rs/cargo@v1
+        with:
+          command: update
+      - name: Build tcp backend
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --manifest-path tcp/Cargo.toml --target ${{ matrix.target }} --features ${{ matrix.features }}
+      - name: Build unix backend
+        if: ${{ !contains(matrix.os, 'windows') }}
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --manifest-path unix/Cargo.toml --target ${{ matrix.target }} --features ${{ matrix.features }}
+      - name: Build serial backend
+        if: ${{ !contains(matrix.features, 'async-std') }}
+        uses: actions-rs/cargo@v1
+        with:
+          command: build
+          args: --manifest-path serial/Cargo.toml --target ${{ matrix.target }} --features ${{ matrix.features }}
+
+  publish:
+    if: (github.repository == 'katyo/unicom') && startsWith(github.ref, 'refs/tags/')
+    needs:
+      - format
+      - doc
+      - check
+      - test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true
+      - name: Setup Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+      - name: Publish crates
+        uses: katyo/publish-crates@v1
+        with:
+          registry-token: ${{ secrets.CRATES_TOKEN }}
+          args: --no-verify
