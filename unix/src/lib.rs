@@ -1,22 +1,6 @@
-/*!
+#![doc = include_str!("../README.md")]
 
-# Raw Unix-domain socket backend for unicom
-
-This backend can be used to connect to device emulators which mapped to Unix-domain socket.
-
-**IMPORTANT NOTE**: Async runtime feature should be selected explicitly.
-
-## Supported features
-
-* __tokio__ Use [tokio](https://docs.rs/tokio/)
-* __async-std__ Use [async-std](https://docs.rs/async-std/)
-
- */
-
-use std::{
-    path::PathBuf,
-    sync::Arc,
-};
+use std::{path::PathBuf, sync::Arc};
 
 #[cfg(feature = "tokio")]
 use tokio_rs::net::UnixStream;
@@ -24,10 +8,7 @@ use tokio_rs::net::UnixStream;
 #[cfg(feature = "async-std")]
 use async_std_rs::os::unix::net::UnixStream;
 
-use unicom::{
-    Url, Error,
-    Backend, Connector, BoxedConnector, BoxedConnect, BoxedConnection,
-};
+use unicom::{Backend, BoxedConnect, BoxedConnection, BoxedConnector, Connector, Error, Url};
 
 /// Unix socket backend
 ///
@@ -84,7 +65,8 @@ impl Connector for UnixConnector {
     fn connect(&self) -> BoxedConnect {
         let this = self.clone();
         Box::pin(async move {
-            let stm = UnixStream::connect(this.path).await
+            let stm = UnixStream::connect(this.path)
+                .await
                 .map_err(|e| Error::FailedConnect(e.to_string()))?;
             Ok(Box::new(stm) as BoxedConnection)
         })

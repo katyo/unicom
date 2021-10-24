@@ -1,19 +1,7 @@
-/*!
+#![doc = include_str!("../README.md")]
 
-# Unified domain name to IP address resolver
-
-**IMPORTANT NOTE**: Async runtime feature should be selected explicitly.
-
-## Supported features
-
-* __tokio__ Use [tokio](https://docs.rs/tokio/)
-* __async-std__ Use [async-std](https://docs.rs/async-std/)
-* __c-ares__ Use [c-ares-resolver](https://docs.rs/c-ares-resolver/)
-
-*/
-
-mod types;
 mod addrs;
+mod types;
 
 #[cfg(feature = "c-ares")]
 mod c_ares_impl;
@@ -24,8 +12,8 @@ mod async_std_impl;
 #[cfg(feature = "tokio")]
 mod tokio_impl;
 
-pub use types::*;
 pub use addrs::*;
+pub use types::*;
 
 #[cfg(feature = "c-ares")]
 pub use c_ares_impl::*;
