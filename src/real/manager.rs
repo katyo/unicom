@@ -1,8 +1,6 @@
 use super::{Backend, BoxedBackend, BoxedConnector};
-use crate::{
-    log::{error, info},
-    Error, Result, ToUrl,
-};
+use crate::{Error, Result, ToUrl};
+use log::{error, info};
 use std::sync::{Arc, RwLock};
 
 /// The list of backends
