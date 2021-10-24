@@ -1,8 +1,43 @@
 [workspace]
 members = [
-  "unicom",
-  "unicom-nres",
-  "unicom-tcp",
-  "unicom-unix",
-  "unicom-serial",
+  "nres",
+  "tcp",
+  "unix",
+  "serial",
 ]
+
+[package]
+name = "unicom"
+version = "0.1.1"
+description = "Unified communication for IoT clients"
+keywords = ["iot", "devices", "communication"]
+authors = ["K. <kayo@illumium.org>"]
+license = "MIT"
+repository = "https://github.com/katyo/unicom"
+readme = "README.md"
+edition = "2018"
+
+[package.metadata.docs.rs]
+features = ["rustdoc"]
+
+[dependencies.url]
+version = "2"
+
+[dependencies.log]
+version = "0.4"
+
+[dependencies.futures-io]
+version = "0.3"
+optional = true
+
+[dependencies.tokio]
+version = "1"
+optional = true
+
+[dependencies.async-std]
+version = "1"
+optional = true
+
+[features]
+futures = ["futures-io"]
+rustdoc = ["futures"]

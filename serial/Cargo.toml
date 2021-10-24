@@ -13,11 +13,11 @@ edition = "2018"
 features = ["rustdoc"]
 
 [dependencies.unicom]
-version = "^0.1"
-path = "../unicom"
+version = "0.1"
+path = ".."
 
 [dependencies.tokio-serial]
-version = "^5"
+version = "5"
 default-features = false
 optional = true
 

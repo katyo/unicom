@@ -13,12 +13,12 @@ edition = "2018"
 features = ["rustdoc"]
 
 [dependencies.unicom]
-version = "^0.1"
-path = "../unicom"
+version = "0.1"
+path = ".."
 
 [dependencies.unicom-nres]
 version = "^0.1"
-path = "../unicom-nres"
+path = "../nres"
 
 [dependencies.tokio-rs]
 package = "tokio"
@@ -28,17 +28,17 @@ optional = true
 
 [dependencies.async-std-rs]
 package = "async-std"
-version = "^1"
+version = "1"
 optional = true
 
 [dev-dependencies.tokio-rs]
 package = "tokio"
-version = "^1"
+version = "1"
 features = ["rt", "io-util", "macros"]
 
 [dev-dependencies.async-std-rs]
 package = "async-std"
-version = "^1"
+version = "1"
 features = ["attributes"]
 
 [features]
