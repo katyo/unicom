@@ -15,14 +15,11 @@ impl Resolver for AsyncStdResolver {
         let resolver = self.resolver.clone();
         Box::pin(async move {
             if resolver.lock().unwrap().is_none() {
-                *resolver.lock().unwrap() = Some(
-                    new_resolver(
-                        config::ResolverConfig::default(),
-                        config::ResolverOpts::default(),
-                    )
-                    .await
-                    .map_err(|e| Error::FailedResolve(e.to_string())),
-                );
+                *resolver.lock().unwrap() = Some(Ok(new_resolver(
+                    config::ResolverConfig::default(),
+                    config::ResolverOpts::default(),
+                )
+                .await));
             }
 
             let resolver = resolver.lock().unwrap().clone().unwrap()?;

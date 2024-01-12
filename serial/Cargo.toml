@@ -18,7 +18,6 @@ unicom.workspace = true
 
 [dependencies.tokio-serial]
 workspace = true
-default-features = false
 optional = true
 
 [features]
