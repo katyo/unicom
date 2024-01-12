@@ -1,51 +1,48 @@
 [package]
 name = "unicom-nres"
-version = "0.2.0"
 description = "Unified domain-name to IP address resolver"
+version.workspace = true
+authors.workspace = true
+license.workspace = true
+edition.workspace = true
+repository.workspace = true
+homepage.workspace = true
 keywords = ["unicom", "dns", "resolver", "domain"]
-authors = ["K. <kayo@illumium.org>"]
-license = "MIT"
-repository = "https://github.com/katyo/unicom"
 readme = "README.md"
-edition = "2018"
 
 [package.metadata.docs.rs]
 features = ["rustdoc"]
 
+[dependencies]
+unicom.workspace = true
+
 [dependencies.futures-util]
-version = "0.3"
+workspace = true
 optional = true
 
-[dependencies.unicom]
-version = "0.2.0"
-path = ".."
-
-[dependencies.tokio-rs]
-package = "tokio"
-version = "1"
+[dependencies.tokio]
+workspace = true
 features = ["net"]
 optional = true
 
 [dependencies.c-ares-resolver]
-version = "7"
+workspace = true
 optional = true
 
 [dependencies.async-std-resolver]
-version = "0.20"
+workspace = true
 optional = true
 
-[dev-dependencies.tokio-rs]
-package = "tokio"
-version = "1"
+[dev-dependencies.tokio]
+workspace = true
 features = ["macros"]
 
-[dev-dependencies.async-std-rs]
-package = "async-std"
-version = "1"
+[dev-dependencies.async-std]
+workspace = true
 features = ["attributes"]
 
 [features]
-tokio = ["tokio-rs", "unicom/tokio"]
+tokio = ["dep:tokio", "unicom/tokio"]
 async-std = ["async-std-resolver", "unicom/async-std"]
 c-ares = ["c-ares-resolver", "futures-util", "unicom/futures"]
 rustdoc = ["async-std"]

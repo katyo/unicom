@@ -1,5 +1,5 @@
 use crate::{Resolver, Resolving};
-use tokio_rs::net::lookup_host;
+use tokio::net::lookup_host;
 use unicom::Error;
 
 #[derive(Clone, Default)]
@@ -21,7 +21,6 @@ impl Resolver for TokioResolver {
 #[cfg(test)]
 mod test {
     use super::{Resolver, TokioResolver};
-    use tokio_rs as tokio;
 
     #[tokio::test]
     async fn test_success() {

@@ -5,37 +5,58 @@ members = [
   "unix",
   "serial",
 ]
+resolver = "2"
+
+[workspace.package]
+version = "0.3.0"
+authors = ["K. <kayo@illumium.org>"]
+license = "MIT"
+edition = "2018"
+repository = "https://github.com/katyo/unicom"
+homepage = "https://github.com/katyo/unicom"
+
+[workspace.dependencies]
+url = "2"
+log = "0.4"
+futures-io = "0.3"
+futures-util = "0.3"
+tokio = "1"
+async-std = "1"
+c-ares-resolver = "8"
+async-std-resolver = "0.20"
+tokio-serial = "5"
+unicom.path = ""
+unicom-nres.path = "nres"
 
 [package]
 name = "unicom"
-version = "0.2.0"
 description = "Unified communication for IoT clients"
+version.workspace = true
+authors.workspace = true
+license.workspace = true
+edition.workspace = true
+repository.workspace = true
+homepage.workspace = true
 keywords = ["iot", "devices", "communication"]
-authors = ["K. <kayo@illumium.org>"]
-license = "MIT"
-repository = "https://github.com/katyo/unicom"
 readme = "README.md"
-edition = "2018"
 
 [package.metadata.docs.rs]
 features = ["rustdoc"]
 
-[dependencies.url]
-version = "2"
-
-[dependencies.log]
-version = "0.4"
+[dependencies]
+url.workspace = true
+log.workspace = true
 
 [dependencies.futures-io]
-version = "0.3"
+workspace = true
 optional = true
 
 [dependencies.tokio]
-version = "1"
+workspace = true
 optional = true
 
 [dependencies.async-std]
-version = "1"
+workspace = true
 optional = true
 
 [features]

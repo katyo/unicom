@@ -3,10 +3,10 @@
 use std::{net::SocketAddr, sync::Arc};
 
 #[cfg(feature = "tokio")]
-use tokio_rs::net::TcpStream;
+use tokio::net::TcpStream;
 
 #[cfg(feature = "async-std")]
-use async_std_rs::net::TcpStream;
+use async_std::net::TcpStream;
 
 use unicom::{Backend, BoxedConnect, BoxedConnection, BoxedConnector, Connector, Error, Host, Url};
 
@@ -120,16 +120,10 @@ where
 #[cfg(test)]
 mod test {
     #[cfg(feature = "tokio")]
-    use {
-        tokio_rs as tokio,
-        tokio_rs::{io::copy, net::TcpListener, prelude::*, task::spawn},
-    };
+    use tokio::{io::copy, net::TcpListener, prelude::*, task::spawn};
 
     #[cfg(feature = "async-std")]
-    use {
-        async_std_rs as async_std,
-        async_std_rs::{io::copy, net::TcpListener, prelude::*, task::spawn},
-    };
+    use async_std::{io::copy, net::TcpListener, prelude::*, task::spawn};
 
     use super::TcpSocket;
     use unicom::Manager;

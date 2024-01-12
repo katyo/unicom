@@ -1,23 +1,23 @@
 [package]
 name = "unicom-serial"
-version = "0.2.0"
 description = "Serial port backend for unicom."
+version.workspace = true
+authors.workspace = true
+license.workspace = true
+edition.workspace = true
+repository.workspace = true
+homepage.workspace = true
 keywords = ["unicom", "serial", "port", "iot"]
-authors = ["K. <kayo@illumium.org>"]
-license = "MIT"
-repository = "https://github.com/katyo/unicom"
 readme = "README.md"
-edition = "2018"
 
 [package.metadata.docs.rs]
 features = ["rustdoc"]
 
-[dependencies.unicom]
-version = "0.2.0"
-path = ".."
+[dependencies]
+unicom.workspace = true
 
 [dependencies.tokio-serial]
-version = "5"
+workspace = true
 default-features = false
 optional = true
 

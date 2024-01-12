@@ -3,10 +3,10 @@
 use std::{path::PathBuf, sync::Arc};
 
 #[cfg(feature = "tokio")]
-use tokio_rs::net::UnixStream;
+use tokio::net::UnixStream;
 
 #[cfg(feature = "async-std")]
-use async_std_rs::os::unix::net::UnixStream;
+use async_std::os::unix::net::UnixStream;
 
 use unicom::{Backend, BoxedConnect, BoxedConnection, BoxedConnector, Connector, Error, Url};
 
