@@ -6,161 +6,53 @@ on:
     tags:
       - '[0-9]+.[0-9]+.[0-9]+'
   pull_request:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.head_ref || github.run_id }}
+  cancel-in-progress: true
+
 jobs:
   format:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-        with:
-          submodules: true
+      - uses: actions/checkout@v4
       - name: Setup Rust
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@v1
         with:
           toolchain: stable
-          profile: minimal
           components: rustfmt
-          default: true
-          override: true
-      - name: Cargo cache
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/git
-          key: ${{ runner.os }}-cargo-rust_stable-${{ hashFiles('**/Cargo.lock') }}
+      - uses: Swatinem/rust-cache@v2
       - name: Format
-        uses: actions-rs/cargo@v1
-        with:
-          command: fmt
-          args: --all -- --check
+        run: cargo fmt --all -- --check
 
   doc:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-        with:
-          submodules: true
+      - uses: actions/checkout@v4
       - name: Setup Rust
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@v1
         with:
           toolchain: nightly
-          profile: minimal
           components: rust-docs
-          default: true
-          override: true
-      - name: Cargo cache
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/git
-          key: ${{ runner.os }}-cargo-rust_nightly-${{ hashFiles('**/Cargo.lock') }}
-      - name: Build cache
-        uses: actions/cache@v2
-        with:
-          path: target
-          key: ${{ runner.os }}-build-rust_nightly-doc-${{ hashFiles('**/Cargo.lock') }}
+      - uses: Swatinem/rust-cache@v2
       - name: Docs core
-        uses: actions-rs/cargo@v1
         env:
           DOCS_RS: 1
-        with:
-          command: doc
-          args: --features rustdoc
-      - name: Docs nres
-        uses: actions-rs/cargo@v1
-        env:
-          DOCS_RS: 1
-        with:
-          command: doc
-          args: --manifest-path nres/Cargo.toml --features rustdoc
-      - name: Docs tcp
-        uses: actions-rs/cargo@v1
-        env:
-          DOCS_RS: 1
-        with:
-          command: doc
-          args: --manifest-path tcp/Cargo.toml --features rustdoc
-      - name: Docs unix
-        uses: actions-rs/cargo@v1
-        env:
-          DOCS_RS: 1
-        with:
-          command: doc
-          args: --manifest-path unix/Cargo.toml --features rustdoc
-      - name: Docs serial
-        uses: actions-rs/cargo@v1
-        env:
-          DOCS_RS: 1
-        with:
-          command: doc
-          args: --manifest-path serial/Cargo.toml --features rustdoc
-      - name: Upload docs
-        uses: actions/upload-artifact@v2
-        with:
-          name: docs
-          path: |
-            target/doc/unicom
-            target/doc/unicom-nres
-            target/doc/unicom-tcp
-            target/doc/unicom-unix
-            target/doc/unicom-serial
+        run: cargo doc --all --features rustdoc
 
   check:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
-        with:
-          submodules: true
-      - uses: actions-rs/toolchain@v1
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@v1
         with:
           toolchain: nightly
-          profile: minimal
           components: clippy
-          default: true
-          override: true
-      - name: Cargo cache
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/git
-          key: ${{ runner.os }}-cargo-rust_nightly-${{ hashFiles('**/Cargo.lock') }}
-      - name: Build cache
-        uses: actions/cache@v2
-        with:
-          path: target
-          key: ${{ runner.os }}-build-rust_nightly-check-${{ hashFiles('**/Cargo.lock') }}
-      - name: Check core
-        uses: actions-rs/clippy-check@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          args: --features futures
-      - name: Check tokio tcp
-        uses: actions-rs/clippy-check@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          args: --manifest-path tcp/Cargo.toml --features tokio
-      - name: Check async-std tcp
-        uses: actions-rs/clippy-check@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          args: --manifest-path tcp/Cargo.toml --features async-std
-      - name: Check tokio unix
-        uses: actions-rs/clippy-check@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          args: --manifest-path unix/Cargo.toml --features tokio
-      - name: Check async-std unix
-        uses: actions-rs/clippy-check@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          args: --manifest-path unix/Cargo.toml --features async-std
-      - name: Check tokio serial
-        uses: actions-rs/clippy-check@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          args: --manifest-path serial/Cargo.toml --features tokio
+      - uses: Swatinem/rust-cache@v2
+      - name: Code check (tokio)
+        run: cargo clippy --all --all-targets --features tokio
+      - name: Code check (async)
+        run: cargo clippy -p unicom-tcp -p unicom-unix --all-targets --features async
 
   test:
     needs:
@@ -182,7 +74,7 @@ jobs:
             os: ubuntu-latest
             rust: stable
             target: i686-unknown-linux-gnu
-            features: async-std
+            features: async
           ## Linux x86_64
           - task: features
             os: ubuntu-latest
@@ -193,7 +85,7 @@ jobs:
             os: ubuntu-latest
             rust: stable
             target: x86_64-unknown-linux-gnu
-            features: async-std
+            features: async
           ## MacOS x86_64
           - task: features
             os: macos-latest
@@ -204,7 +96,7 @@ jobs:
             os: macos-latest
             rust: stable
             target: x86_64-apple-darwin
-            features: async-std
+            features: async
           ## Windows GNU i686
           - task: features
             os: windows-latest
@@ -215,7 +107,7 @@ jobs:
             os: windows-latest
             rust: stable
             target: i686-pc-windows-gnu
-            features: async-std
+            features: async
           ## Windows GNU x86_64
           - task: features
             os: windows-latest
@@ -226,7 +118,7 @@ jobs:
             os: windows-latest
             rust: stable
             target: x86_64-pc-windows-gnu
-            features: async-std
+            features: async
           ## Windows MSVC i686
           - task: features
             os: windows-latest
@@ -237,7 +129,7 @@ jobs:
             os: windows-latest
             rust: stable
             target: i686-pc-windows-msvc
-            features: async-std
+            features: async
           ## Windows MSVC x86_64
           - task: features
             os: windows-latest
@@ -248,7 +140,7 @@ jobs:
             os: windows-latest
             rust: stable
             target: x86_64-pc-windows-msvc
-            features: async-std
+            features: async
           # Test channels
           ## Stable channel
           - task: channels
@@ -260,7 +152,7 @@ jobs:
             os: ubuntu-latest
             rust: stable
             target: x86_64-unknown-linux-gnu
-            features: async-std
+            features: async
           ## Beta channel
           - task: channels
             os: ubuntu-latest
@@ -271,7 +163,7 @@ jobs:
             os: ubuntu-latest
             rust: beta
             target: x86_64-unknown-linux-gnu
-            features: async-std
+            features: async
           ## Nightly channel
           - task: channels
             os: ubuntu-latest
@@ -282,12 +174,10 @@ jobs:
             os: ubuntu-latest
             rust: nightly
             target: x86_64-unknown-linux-gnu
-            features: async-std
+            features: async
     runs-on: ${{ matrix.os }}
     steps:
-      - uses: actions/checkout@v2
-        with:
-          submodules: true
+      - uses: actions/checkout@v4
       - name: Setup cross linux toolchain
         if: contains(matrix.target, '-linux-') && !startsWith(matrix.target, 'x86_64-')
         run: |
@@ -318,48 +208,21 @@ jobs:
           echo "CC_x86_64_pc_windows_gnu=x86_64-w64-mingw32-gcc" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
           echo "CC_i686_pc_windows_gnu=i686-w64-mingw32-gcc" | Out-File -FilePath $Env:GITHUB_ENV -Encoding utf8 -Append
       - name: Setup Rust
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@v1
         with:
           toolchain: ${{ matrix.rust }}
           target: ${{ matrix.target }}
-          profile: minimal
-          components: rustfmt
-          default: true
-          override: true
-      - name: Cargo cache
-        uses: actions/cache@v2
-        with:
-          path: |
-            ~/.cargo/registry
-            ~/.cargo/git
-          key: ${{ runner.os }}-cargo-rust_${{ matrix.rust }}-${{ hashFiles('**/Cargo.lock') }}
-      - name: Build cache
-        if: ${{ runner.os != 'macOS' }}
-        uses: actions/cache@v2
-        with:
-          path: target
-          key: ${{ runner.os }}-build-rust_${{ matrix.rust }}-target_${{ matrix.target }}-${{ hashFiles('**/Cargo.lock') }}
+      - uses: Swatinem/rust-cache@v2
       - name: Update deps
-        uses: actions-rs/cargo@v1
-        with:
-          command: update
+        run: cargo update
       - name: Build tcp backend
-        uses: actions-rs/cargo@v1
-        with:
-          command: build
-          args: --manifest-path tcp/Cargo.toml --target ${{ matrix.target }} --features ${{ matrix.features }}
+        run: cargo build -p unicom-tcp --target ${{ matrix.target }} --features ${{ matrix.features }}
       - name: Build unix backend
         if: ${{ !contains(matrix.os, 'windows') }}
-        uses: actions-rs/cargo@v1
-        with:
-          command: build
-          args: --manifest-path unix/Cargo.toml --target ${{ matrix.target }} --features ${{ matrix.features }}
+        run: cargo build -p unicom-unix --target ${{ matrix.target }} --features ${{ matrix.features }}
       - name: Build serial backend
-        if: ${{ !contains(matrix.features, 'async-std') }}
-        uses: actions-rs/cargo@v1
-        with:
-          command: build
-          args: --manifest-path serial/Cargo.toml --target ${{ matrix.target }} --features ${{ matrix.features }}
+        if: ${{ !contains(matrix.features, 'async') }}
+        run: cargo build -p unicom-serial --target ${{ matrix.target }} --features ${{ matrix.features }}
 
   publish:
     if: (github.repository == 'katyo/unicom') && startsWith(github.ref, 'refs/tags/')
@@ -370,16 +233,13 @@ jobs:
       - test
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-        with:
-          submodules: true
+      - uses: actions/checkout@v4
       - name: Setup Rust
-        uses: actions-rs/toolchain@v1
+        uses: dtolnay/rust-toolchain@v1
         with:
           toolchain: stable
-          override: true
       - name: Publish crates
-        uses: katyo/publish-crates@v1
+        uses: katyo/publish-crates@v2
         with:
           registry-token: ${{ secrets.CRATES_TOKEN }}
           args: --no-verify
