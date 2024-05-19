@@ -1,18 +1,19 @@
 use crate::{Resolver, Resolving};
-use tokio::net::lookup_host;
+use async_net::resolve;
 use unicom::Error;
 
 #[derive(Clone, Default)]
 #[non_exhaustive]
-pub struct TokioResolver;
+pub struct AsyncResolver;
 
-impl Resolver for TokioResolver {
+impl Resolver for AsyncResolver {
     fn resolve_str(&self, name: &str) -> Resolving {
-        let name = name.to_string() + ":0"; // add port number because tokio resolves socket addr only
+        let name = name.to_string() + ":0";
         Box::pin(async move {
-            Ok(lookup_host(name)
+            Ok(resolve(&name)
                 .await
                 .map_err(|e| Error::FailedResolve(e.to_string()))?
+                .into_iter()
                 .map(|addr| addr.ip())
                 .collect())
         })
@@ -21,19 +22,21 @@ impl Resolver for TokioResolver {
 
 #[cfg(test)]
 mod test {
-    use super::{Resolver, TokioResolver};
+    use super::{AsyncResolver, Resolver};
+    use macro_rules_attribute::apply;
+    use smol_macros::test;
 
-    #[tokio::test]
+    #[apply(test!)]
     async fn test_success() {
-        let r = TokioResolver::default();
+        let r = AsyncResolver::default();
         let r = r.resolve_name("github.com").await;
 
         assert!(r.is_ok());
     }
 
-    #[tokio::test]
+    #[apply(test!)]
     async fn test_failed() {
-        let r = TokioResolver::default();
+        let r = AsyncResolver::default();
         let r = r.resolve_name("nothing.nowhere").await;
 
         assert!(r.is_err());

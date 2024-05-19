@@ -1,10 +1,13 @@
 #![doc = include_str!("../README.md")]
 
-#[cfg(not(any(feature = "futures", feature = "tokio", feature = "async-std")))]
-compile_error!("Either of features should be selected: futures, tokio, async-std");
+#[cfg(not(any(feature = "async", feature = "tokio")))]
+compile_error!("Either feature should be selected: async, tokio");
 
-#[cfg(any(feature = "futures", feature = "tokio", feature = "async-std"))]
+#[cfg(all(feature = "async", feature = "tokio"))]
+compile_error!("Either feature should be selected: async, tokio. Not both together.");
+
+#[cfg(any(feature = "async", feature = "tokio"))]
 mod real;
 
-#[cfg(any(feature = "futures", feature = "tokio", feature = "async-std"))]
+#[cfg(any(feature = "async", feature = "tokio"))]
 pub use real::*;

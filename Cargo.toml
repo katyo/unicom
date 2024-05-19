@@ -21,10 +21,11 @@ log = "0.4"
 futures-io = "0.3"
 futures-util = "0.3"
 tokio = "1"
-async-std = "1"
-c-ares-resolver = "8"
-async-std-resolver = "0.24"
+async-net = "2"
 tokio-serial = "5"
+smol = "2"
+smol-macros = "0.1"
+macro_rules_attribute = "0.2"
 unicom.path = ""
 unicom-nres.path = "nres"
 
@@ -55,10 +56,6 @@ optional = true
 workspace = true
 optional = true
 
-[dependencies.async-std]
-workspace = true
-optional = true
-
 [features]
-futures = ["futures-io"]
-rustdoc = ["futures"]
+async = ["futures-io"]
+rustdoc = ["tokio"]

@@ -22,6 +22,6 @@ optional = true
 
 [features]
 tokio = ["tokio-serial", "unicom/tokio"]
-async-std = ["unicom/async-std"]
+async = ["unicom/async"]
 libudev = ["tokio-serial/libudev"]
 rustdoc = ["tokio"]

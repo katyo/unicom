@@ -5,8 +5,8 @@ use std::{path::PathBuf, sync::Arc};
 #[cfg(feature = "tokio")]
 use tokio::net::UnixStream;
 
-#[cfg(feature = "async-std")]
-use async_std::os::unix::net::UnixStream;
+#[cfg(feature = "async")]
+use async_net::unix::UnixStream;
 
 use unicom::{Backend, BoxedConnect, BoxedConnection, BoxedConnector, Connector, Error, Url};
 

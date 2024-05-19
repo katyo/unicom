@@ -5,8 +5,8 @@ use std::{net::SocketAddr, sync::Arc};
 #[cfg(feature = "tokio")]
 use tokio::net::TcpStream;
 
-#[cfg(feature = "async-std")]
-use async_std::net::TcpStream;
+#[cfg(feature = "async")]
+use async_net::TcpStream;
 
 use unicom::{Backend, BoxedConnect, BoxedConnection, BoxedConnector, Connector, Error, Host, Url};
 
@@ -52,7 +52,7 @@ where
             let host = match url.host() {
                 // parse domain name as host because Url doesn't parse it for speculative protocols
                 Some(Host::Domain(name)) => {
-                    if let Ok(host) = Host::parse(&name) {
+                    if let Ok(host) = Host::parse(name) {
                         host
                     } else {
                         return None;
@@ -120,17 +120,32 @@ where
 #[cfg(test)]
 mod test {
     #[cfg(feature = "tokio")]
-    use tokio::{io::copy, net::TcpListener, prelude::*, task::spawn};
+    use tokio::{
+        io::{copy, AsyncReadExt, AsyncWriteExt},
+        net::TcpListener,
+        task::spawn,
+        test,
+    };
 
-    #[cfg(feature = "async-std")]
-    use async_std::{io::copy, net::TcpListener, prelude::*, task::spawn};
+    #[cfg(feature = "async")]
+    use smol::{
+        io::{copy, AsyncReadExt, AsyncWriteExt},
+        net::TcpListener,
+        spawn,
+    };
+
+    #[cfg(feature = "async")]
+    use smol_macros::test;
+
+    #[cfg(feature = "async")]
+    use macro_rules_attribute::apply;
 
     use super::TcpSocket;
     use unicom::Manager;
     use unicom_nres::DefaultResolver;
 
-    #[cfg_attr(feature = "tokio", tokio::test)]
-    #[cfg_attr(feature = "async-std", async_std::test)]
+    #[cfg_attr(feature = "tokio", test)]
+    #[cfg_attr(feature = "async", apply(test!))]
     async fn connect() {
         let manager = Manager::default();
         manager
@@ -149,20 +164,37 @@ mod test {
         assert_eq!(&data[..n], input);
     }
 
+    #[cfg(feature = "async")]
     async fn echo_server(addr: &str) -> std::io::Result<()> {
-        let mut listener = TcpListener::bind(addr).await?;
-        //println!("listenning: {:?}", listener);
+        let listener = TcpListener::bind(addr).await?;
+
+        spawn(async move {
+            loop {
+                let (socket, _) = listener.accept().await?;
+
+                let rd = socket.clone();
+                let wr = socket;
+
+                if copy(rd, wr).await? == 0 {
+                    break;
+                }
+            }
+            Ok(()) as std::io::Result<_>
+        })
+        .detach();
+
+        Ok(())
+    }
+
+    #[cfg(feature = "tokio")]
+    async fn echo_server(addr: &str) -> std::io::Result<()> {
+        let listener = TcpListener::bind(addr).await?;
 
         spawn(async move {
             loop {
                 let (mut socket, _) = listener.accept().await?;
-                //println!("accepted: {:?}", socket);
 
-                #[cfg(feature = "tokio")]
                 let (mut rd, mut wr) = socket.split();
-
-                #[cfg(feature = "async-std")]
-                let (mut rd, mut wr) = &mut (&socket, &socket);
 
                 if copy(&mut rd, &mut wr).await? == 0 {
                     break;

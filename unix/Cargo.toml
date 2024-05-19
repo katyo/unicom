@@ -21,11 +21,11 @@ workspace = true
 features = ["net"]
 optional = true
 
-[dependencies.async-std]
+[dependencies.async-net]
 workspace = true
 optional = true
 
 [features]
 tokio = ["dep:tokio", "unicom/tokio"]
-async-std = ["dep:async-std", "unicom/async-std"]
-rustdoc = ["async-std"]
+async = ["dep:async-net", "unicom/async"]
+rustdoc = ["tokio"]

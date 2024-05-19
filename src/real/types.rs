@@ -1,14 +1,11 @@
-use std::future::Future;
-use std::{ops::Deref, pin::Pin, sync::Arc};
+use core::{future::Future, ops::Deref, pin::Pin};
+use std::sync::Arc;
 
-#[cfg(feature = "futures")]
+#[cfg(feature = "async")]
 use futures_io::{AsyncRead, AsyncWrite};
 
 #[cfg(feature = "tokio")]
 use tokio::io::{AsyncRead, AsyncWrite};
-
-#[cfg(feature = "async-std")]
-use async_std::io::{Read as AsyncRead, Write as AsyncWrite};
 
 use crate::{Result, Url};
 

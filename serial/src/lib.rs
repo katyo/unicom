@@ -3,8 +3,8 @@
 #[cfg(feature = "tokio")]
 mod tokio_impl;
 
-#[cfg(feature = "async-std")]
-compile_error!("Currently lacks async-std support!");
+#[cfg(feature = "async")]
+compile_error!("Currently lacks non-tokio runtimes support!");
 
 #[cfg(feature = "tokio")]
 pub use tokio_impl::*;

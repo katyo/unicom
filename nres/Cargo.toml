@@ -25,24 +25,20 @@ workspace = true
 features = ["net"]
 optional = true
 
-[dependencies.c-ares-resolver]
-workspace = true
-optional = true
-
-[dependencies.async-std-resolver]
+[dependencies.async-net]
 workspace = true
 optional = true
 
 [dev-dependencies.tokio]
 workspace = true
-features = ["macros"]
+features = ["macros", "rt-multi-thread"]
 
-[dev-dependencies.async-std]
-workspace = true
-features = ["attributes"]
+[dev-dependencies]
+smol.workspace = true
+smol-macros.workspace = true
+macro_rules_attribute.workspace = true
 
 [features]
 tokio = ["dep:tokio", "unicom/tokio"]
-async-std = ["async-std-resolver", "unicom/async-std"]
-c-ares = ["c-ares-resolver", "futures-util", "unicom/futures"]
-rustdoc = ["async-std"]
+async = ["async-net", "unicom/async"]
+rustdoc = ["tokio"]
