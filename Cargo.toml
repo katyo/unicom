@@ -8,7 +8,7 @@ members = [
 resolver = "2"
 
 [workspace.package]
-version = "0.3.0"
+version = "0.4.0"
 authors = ["K. <kayo@illumium.org>"]
 license = "MIT"
 edition = "2018"
@@ -26,8 +26,14 @@ tokio-serial = "5"
 smol = "2"
 smol-macros = "0.1"
 macro_rules_attribute = "0.2"
-unicom.path = ""
-unicom-nres.path = "nres"
+
+[workspace.dependencies.unicom]
+version = "0.4"
+path = ""
+
+[workspace.dependencies.unicom-nres]
+version = "0.4"
+path = "nres"
 
 [package]
 name = "unicom"
